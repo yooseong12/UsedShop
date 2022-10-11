@@ -67,8 +67,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run:  aws deploy create-deployment
-        --application-name coinTalk newcodedeploy
-        --deployment-group-name coinTalk-group newEC2Codedeploy
+        --application-name newcodedeploy
+        --deployment-group-name newEC2Codedeploy
         --file-exists-behavior OVERWRITE
-        --s3-location bucket=cointalk-deploy usedshops3,bundleType=zip,key=coinTalk.zip UsedShopFile.zip
+        --s3-location bucket=usedshops3,bundleType=zip,key=UsedShopFile.zip
         --region ap-northeast-2
