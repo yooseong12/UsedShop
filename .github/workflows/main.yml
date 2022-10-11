@@ -48,7 +48,7 @@ jobs:
         run: cp ./scripts/*.sh ./deploy
 
       - name: Make zip file
-        run: zip -r ./UsedShop.zip ./deploy
+        run: zip -r ./UsedShopFile.zip ./deploy
         shell: bash
 
       - name: Configure AWS credentials
@@ -59,11 +59,11 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./UsedShop.zip s3://$S3_BUCKET_NAME/
+        run: aws s3 cp --region ap-northeast-2 ./UsedShopFile.zip s3://$S3_BUCKET_NAME/
 
         # Code Deploy 설정 추가
       - name: Deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: aws deploy create-deployment --application-name newcodedeploy --deployment-group-name newEC2Codedeploy --file-exists-behavior OVERWRITE --s3-location bucket=usedshops3,bundleType=zip,key=UsedShop.zip --region ap-northeast-2
+        run: aws deploy create-deployment --application-name newcodedeploy --deployment-group-name newEC2Codedeploy --file-exists-behavior OVERWRITE --s3-location bucket=usedshops3,bundleType=zip,key=UsedShopFile.zip --region ap-northeast-2
