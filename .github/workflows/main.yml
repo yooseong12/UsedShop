@@ -1,61 +1,69 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: deploy
+name: Java CI with Gradle
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+env:
+  S3_BUCKET_NAME: usedshops3
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
 
-    strategy:
-      matrix:
-        node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code.
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          java-version: '11'
+          distribution: 'temurin'
 
-      - name: create env file
-        working-directory: ./server
-        run: |
-          touch .env
-          cat << EOF >> .env
-          ${{ secrets.ENV }}
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      - name: build client files
-        working-directory: ./client
-        run: |
-          yarn install --frozen-lockfile
-          yarn build
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
 
-      - name: zip distributions
-        run: zip -r blog-vanilla.zip ./client/dist ./server ./appspec.yml ./scripts
+      - name: Make Directory
+        run: mkdir -p deploy
 
-      - name: AWS configure credentials
+      - name: Copy Jar
+        run: cp ./build/libs/*.jar ./deploy
+
+      - name: Copy appspec.yml
+        run: cp appspec.yml ./deploy
+
+      - name: Copy script
+        run: cp ./scripts/*.sh ./deploy
+
+      - name: Make zip file
+        run: zip -r ./UsedShop.zip ./deploy
+        shell: bash
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./blog-vanilla.zip s3://blog-vanilla-bucket/public/
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./UsedShop.zip s3://$S3_BUCKET_NAME/
 
-      - name: deploy with AWS codeDeploy
-        run: aws deploy create-deployment
-          --application-name blog-vanilla-codedeploy
-          --deployment-config-name CodeDeployDefault.OneAtATime
-          --deployment-group-name deploy-group
-          --s3-location bucket=blog-vanilla-bucket,bundleType=zip,key=public/blog-vanilla.zip
+        # Code Deploy 설정 추가
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: aws deploy create-deployment --application-name newcodedeploy --deployment-group-name newEC2Codedeploy --file-exists-behavior OVERWRITE --s3-location bucket=usedshops3,bundleType=zip,key=UsedShop.zip --region ap-northeast-2
