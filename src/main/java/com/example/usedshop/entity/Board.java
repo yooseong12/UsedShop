@@ -18,17 +18,20 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String goodsTitle;
 
-    private String content;
+    private String goodsEx;
 
-    private Integer hits;
+    private Integer money;
+
+    private String uuid;
+
+    private String folderPath;
 
     @Builder
-    public Board(Long id, String title, String content, Integer hits){
+    public Board(Long id, String goodsTitle, String goodsEx){
         this.id = id;
-        this.title = title;
-        this.content = content;
-        this.hits = hits;
+        this.goodsTitle = goodsTitle;
+        this.goodsEx = goodsEx;
     }
 }
