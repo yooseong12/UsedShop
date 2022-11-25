@@ -4,7 +4,6 @@ import com.example.usedshop.entity.Member;
 import lombok.*;
 
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,9 +17,6 @@ public class MemberRequest {
     private String email;
 
     private String password;
-
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
 
     @Builder
     public MemberRequest(Long id, String email, String password){

@@ -23,6 +23,7 @@ public class MemberService implements UserDetailsService {
 
     private MemberRepository memberRepository;
 
+    //회원가입 처리
     @Transactional
     public Long joinUser(MemberRequest memberRequest) {
         // 비밀번호 암호화
@@ -32,6 +33,7 @@ public class MemberService implements UserDetailsService {
         return memberRepository.save(memberRequest.toEntity()).getId();
     }
 
+    //로그인 처리
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         Optional<Member> memberWraper = memberRepository.findByEmail(userEmail);

@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.*;
@@ -18,20 +20,22 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String goodsTitle;
+    private String title;
 
-    private String goodsEx;
+    private String content;
 
     private Integer money;
 
-    private String uuid;
-
-    private String folderPath;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Member memberId;
 
     @Builder
-    public Board(Long id, String goodsTitle, String goodsEx){
+    public Board(Long id, String title, String content,Integer money){
         this.id = id;
-        this.goodsTitle = goodsTitle;
-        this.goodsEx = goodsEx;
+        this.title = title;
+        this.content = content;
+        this.money = money;
     }
 }

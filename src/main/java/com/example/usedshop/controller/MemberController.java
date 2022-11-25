@@ -25,10 +25,9 @@ public class MemberController {
     }
 
     // 회원가입 처리
-    @PostMapping("/user/signup")
+    @PostMapping("/user/join")
     public String execSignup(MemberRequest memberRequest) {
         memberService.joinUser(memberRequest);
-
         return "redirect:/user/login";
     }
 
