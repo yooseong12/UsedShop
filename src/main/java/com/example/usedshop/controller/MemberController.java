@@ -13,7 +13,7 @@ public class MemberController {
 
     private MemberService memberService;
 
-    @GetMapping("/")
+
     public String index(){
         return "/index";
     }
