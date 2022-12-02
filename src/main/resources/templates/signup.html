@@ -45,9 +45,8 @@
                 else {
                     const path = 'http://localhost:8080/api/signup';
                     const json = JSON.stringify({
-                        'id': id,
-                        'password': password,
-                        'name': name
+                        'email': email,
+                        'password': password
                     });
                     $.ajax({
                         url: path,
